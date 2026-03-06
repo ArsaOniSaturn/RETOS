@@ -1,0 +1,12 @@
+class TiendaMascotas:
+    def vender_comida(self, cantidad, precio):
+        # 1. LÓGICA: Cálculo de dinero
+        total = cantidad * precio
+        
+        # 2. PERSISTENCIA: Inventario (Archivo plano)
+        with open("stock.txt", "a") as f:
+            f.write(f"Salida de inventario: {cantidad} unidades\n")
+            
+        # 3. NOTIFICACIÓN: Recibo por consola
+        print(f"--- TICKET DE VENTA ---")
+        print(f"Total a pagar: ${total}")
