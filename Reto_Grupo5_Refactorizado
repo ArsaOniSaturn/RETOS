@@ -1,5 +1,5 @@
 # ============================================================
-#  🐾 TIENDA DE MASCOTAS — SRP + HIGH COHESION (GRASP)
+#  TIENDA DE MASCOTAS — SRP + HIGH COHESION (GRASP)
 # ============================================================
 #  Cada clase tiene UNA sola responsabilidad:
 #    1. SalesCalculator  → Lógica de negocio (matemáticas)
@@ -7,13 +7,9 @@
 #    3. SalesNotifier    → Notificación / Recibo al cliente
 # ============================================================
 
-import json
-import os
-from datetime import datetime
-
 
 # ============================================================
-# 🧮 CLASE 1: SalesCalculator
+# CLASE 1: SalesCalculator
 # Responsabilidad: SOLO hacer cálculos matemáticos de ventas
 # Razón de cambio: Si cambia el IVA o la lógica de descuentos
 # ============================================================
@@ -37,7 +33,7 @@ class SalesCalculator:
 
 
 # ============================================================
-# 💾 CLASE 2: SalesRepository
+# CLASE 2: SalesRepository
 # Responsabilidad: SOLO guardar y recuperar ventas (JSON)
 # Razón de cambio: Si se cambia la base de datos o el formato
 # ============================================================
@@ -55,7 +51,7 @@ class SalesRepository:
 
 
 # ============================================================
-# 📬 CLASE 3: SalesNotifier
+# CLASE 3: SalesNotifier
 # Responsabilidad: SOLO formatear y mostrar recibos/alertas
 # Razón de cambio: Si cambia el formato, idioma o canal
 # ============================================================
@@ -72,17 +68,17 @@ class SalesNotifier:
 
 
 # ============================================================
-# 🛒 ORQUESTADOR — Une las 3 clases (no mezcla lógicas)
+# ORQUESTADOR — Une las 3 clases (no mezcla lógicas)
 # ============================================================
 def registrar_venta(producto, precio, cantidad, descuento_pct=0):
     calculator  = SalesCalculator()
     repository  = SalesRepository()
     notifier    = SalesNotifier()
 
-    # 🧮 Paso 1: SalesCalculator hace los cálculos
+    # Paso 1: SalesCalculator hace los cálculos
     calculos = calculator.calcular_total(precio, cantidad, descuento_pct)
 
-    # 💾 Paso 2: SalesRepository guarda la venta
+    # Paso 2: SalesRepository guarda la venta
     venta = repository.guardar({
         "producto":  producto,
         "precio":    precio,
@@ -90,7 +86,7 @@ def registrar_venta(producto, precio, cantidad, descuento_pct=0):
         **calculos,
     })
 
-    # 📬 Paso 3: SalesNotifier muestra el recibo
+    # Paso 3: SalesNotifier muestra el recibo
     notifier.imprimir_recibo(venta)
     notifier.notificar("Venta guardada correctamente")
 
