@@ -1,0 +1,96 @@
+# ============================================================
+#  🐾 TIENDA DE MASCOTAS — SRP + HIGH COHESION (GRASP)
+# ============================================================
+#  Cada clase tiene UNA sola responsabilidad:
+#    1. SalesCalculator  → Lógica de negocio (matemáticas)
+#    2. SalesRepository  → Persistencia de datos (archivo JSON)
+#    3. SalesNotifier    → Notificación / Recibo al cliente
+# ============================================================
+
+import json
+import os
+from datetime import datetime
+
+
+# ============================================================
+# 🧮 CLASE 1: SalesCalculator
+# Responsabilidad: SOLO hacer cálculos matemáticos de ventas
+# Razón de cambio: Si cambia el IVA o la lógica de descuentos
+# ============================================================
+class SalesCalculator:
+    IVA = 0.19
+
+    def calcular_subtotal(self, precio: float, cantidad: int) -> float:
+        return precio * cantidad
+
+    def calcular_descuento(self, subtotal: float, porcentaje: float) -> float:
+        return subtotal * (porcentaje / 100)
+
+    def calcular_total(self, precio: float, cantidad: int, descuento_pct: float) -> dict:
+        subtotal  = self.calcular_subtotal(precio, cantidad)
+        descuento = self.calcular_descuento(subtotal, descuento_pct)
+        base      = subtotal - descuento
+        impuesto  = base * self.IVA
+        total     = base + impuesto
+        return {"subtotal": subtotal, "descuento": descuento, "total": total}
+
+
+# ============================================================
+# 💾 CLASE 2: SalesRepository
+# Responsabilidad: SOLO guardar y recuperar ventas (JSON)
+# Razón de cambio: Si se cambia la base de datos o el formato
+# ============================================================
+
+class SalesRepository:
+    def __init__(self):
+        self.ventas = []
+
+    def guardar(self, venta):
+        self.ventas.append(venta)
+
+    def obtener_todas(self):
+        return self.ventas
+
+
+
+# ============================================================
+# 📬 CLASE 3: SalesNotifier
+# Responsabilidad: SOLO formatear y mostrar recibos/alertas
+# Razón de cambio: Si cambia el formato, idioma o canal
+# ============================================================
+class SalesNotifier:
+
+    def imprimir_recibo(self, venta):
+        print("🧾 RECIBO DE VENTA")
+        print(f"  Producto : {venta['producto']}")
+        print(f"  Total    : ${venta['total']:.2f}")
+
+    def notificar(self, mensaje):
+        print(f"✅ {mensaje}")
+
+
+
+# ============================================================
+# 🛒 ORQUESTADOR — Une las 3 clases (no mezcla lógicas)
+# ============================================================
+def registrar_venta(producto, precio, cantidad, descuento_pct=0):
+    calculator  = SalesCalculator()
+    repository  = SalesRepository()
+    notifier    = SalesNotifier()
+
+    # 🧮 Paso 1: SalesCalculator hace los cálculos
+    calculos = calculator.calcular_total(precio, cantidad, descuento_pct)
+
+    # 💾 Paso 2: SalesRepository guarda la venta
+    venta = repository.guardar({
+        "producto":  producto,
+        "precio":    precio,
+        "cantidad":  cantidad,
+        **calculos,
+    })
+
+    # 📬 Paso 3: SalesNotifier muestra el recibo
+    notifier.imprimir_recibo(venta)
+    notifier.notificar("Venta guardada correctamente")
+
+    return venta
