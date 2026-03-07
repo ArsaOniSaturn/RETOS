@@ -17,6 +17,7 @@ from datetime import datetime
 # Responsabilidad: SOLO hacer cálculos matemáticos de ventas
 # Razón de cambio: Si cambia el IVA o la lógica de descuentos
 # ============================================================
+
 class SalesCalculator:
     IVA = 0.19
 
